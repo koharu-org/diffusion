@@ -38,19 +38,19 @@ jobs:
       matrix:
         include:
           - backend: cuda
-            os: windows-2022-xlarge
+            os: windows-2022
           - backend: cuda
-            os: ubuntu-latest-xlarge
+            os: ubuntu-latest
           - backend: hip
-            os: windows-2022-xlarge
+            os: windows-2022
           - backend: hip
-            os: ubuntu-latest-xlarge
+            os: ubuntu-latest
           - backend: vulkan
-            os: ubuntu-latest-xlarge
+            os: ubuntu-latest
           - backend: vulkan
-            os: windows-2022-xlarge
+            os: windows-2022
           - backend: metal
-            os: macos-latest-xlarge
+            os: macos-latest
 
     runs-on: ${{ matrix.os }}
     env:
