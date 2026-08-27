@@ -3,7 +3,7 @@ name: Diffusion
 on:
   workflow_dispatch:
   schedule:
-    - cron: '47 3 * * 0'
+    - cron: '47 3 * * *'
   push:
     branches: ['main']
 
