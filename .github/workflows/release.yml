@@ -47,17 +47,17 @@ jobs:
       matrix:
         include:
           - backend: cuda
-            os: windows-2022
+            os: windows-latest
           - backend: cuda
             os: ubuntu-latest
           - backend: hip
-            os: windows-2022
+            os: windows-latest
           - backend: hip
             os: ubuntu-latest
           - backend: vulkan
             os: ubuntu-latest
           - backend: vulkan
-            os: windows-2022
+            os: windows-latest
           - backend: metal
             os: macos-latest
 
@@ -134,9 +134,11 @@ jobs:
           } >> "$GITHUB_ENV"
           printf '%s\n%s\n' "$rocm_bin" "$llvm_bin" >> "$GITHUB_PATH"
 
-      - name: Enable MSVC
+      - name: Enable Visual Studio 2022 toolset
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: '14.44'
 
       - name: Install Ninja
         if: runner.os == 'Windows'
@@ -198,7 +200,7 @@ jobs:
             cuda)
               backend_args+=(
                 "-DSD_CUDA=ON"
-                "-DCMAKE_CUDA_ARCHITECTURES=75-real;80-real;86-real;89-real;90-real;100-real;120"
+                "-DCMAKE_CUDA_ARCHITECTURES=75-real;86-real;89-real;120a-real"
               )
               ;;
             hip)
@@ -210,8 +212,7 @@ jobs:
                 "-DSD_HIPBLAS=ON"
                 "-DCMAKE_C_COMPILER=clang$suffix"
                 "-DCMAKE_CXX_COMPILER=clang++$suffix"
-                "-DGPU_TARGETS=gfx1010;gfx1011;gfx1012;gfx1030;gfx1031;gfx1032;gfx1033;gfx1034;gfx1035;gfx1036;gfx1100;gfx1101;gfx1102;gfx1103;gfx1150;gfx1151;gfx1152;gfx1153;gfx1200;gfx1201;gfx908;gfx90a"
-                "-DAMDGPU_TARGETS=gfx1010;gfx1011;gfx1012;gfx1030;gfx1031;gfx1032;gfx1033;gfx1034;gfx1035;gfx1036;gfx1100;gfx1101;gfx1102;gfx1103;gfx1150;gfx1151;gfx1152;gfx1153;gfx1200;gfx1201;gfx908;gfx90a"
+                "-DGPU_TARGETS=gfx1030;gfx1031;gfx1032;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201"
               )
               ;;
             vulkan)
