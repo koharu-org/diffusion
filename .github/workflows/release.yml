@@ -251,7 +251,7 @@ jobs:
       - name: Build stable-diffusion
         shell: bash
         timeout-minutes: 300
-        run: cmake --build build --target stable-diffusion --config Release
+        run: cmake --build build --target stable-diffusion --config Release --parallel "$(nproc 2>/dev/null || sysctl -n hw.logicalcpu)"
 
       - name: Package stable-diffusion
         shell: bash
