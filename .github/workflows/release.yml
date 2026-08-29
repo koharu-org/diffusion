@@ -103,13 +103,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install ROCm 7.14
+      - name: Install ROCm 10.0
         if: matrix.backend == 'hip'
         shell: bash
         run: |
           python -m pip install \
-            --index-url https://repo.amd.com/rocm/whl-multi-arch/ \
-            "rocm[libraries,devel]==7.14.0"
+            --index-url https://stable.repo.amd.com/rocm/whl-next/ \
+            "rocm[libraries,devel]==10.0.0"
           rocm-sdk init
 
           rocm_root=$(rocm-sdk path --root)
