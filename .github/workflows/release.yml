@@ -84,11 +84,11 @@ jobs:
           path: upstream/stable-diffusion.cpp
           submodules: true
 
-      - name: Install CUDA 12.9
+      - name: Install CUDA 13.0
         if: matrix.backend == 'cuda'
         uses: Jimver/cuda-toolkit@master
         with:
-          cuda: '12.9.0'
+          cuda: '13.0.0'
           method: network
           sub-packages: >-
             ${{ runner.os == 'Linux'
@@ -200,7 +200,7 @@ jobs:
             cuda)
               backend_args+=(
                 "-DSD_CUDA=ON"
-                "-DCMAKE_CUDA_ARCHITECTURES=61-real;70-real;75-real;80-real;86-real;89-real;90-real;100-real;120-real"
+                "-DCMAKE_CUDA_ARCHITECTURES=75-real;80-real;86-real;89-real;90-real;100-real;120-real"
               )
               ;;
             hip)
