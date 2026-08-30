@@ -84,11 +84,11 @@ jobs:
           path: upstream/stable-diffusion.cpp
           submodules: true
 
-      - name: Install CUDA 13.0
+      - name: Install CUDA 12.9
         if: matrix.backend == 'cuda'
         uses: Jimver/cuda-toolkit@master
         with:
-          cuda: '13.0.0'
+          cuda: '12.9.0'
           method: network
           sub-packages: >-
             ${{ runner.os == 'Linux'
@@ -200,7 +200,7 @@ jobs:
             cuda)
               backend_args+=(
                 "-DSD_CUDA=ON"
-                "-DCMAKE_CUDA_ARCHITECTURES=75-real;86-real;89-real;120a-real"
+                "-DCMAKE_CUDA_ARCHITECTURES=61-real;70-real;75-real;80-real;86-real;89-real;90-real;100-real;120-real"
               )
               ;;
             hip)
@@ -212,7 +212,7 @@ jobs:
                 "-DSD_HIPBLAS=ON"
                 "-DCMAKE_C_COMPILER=clang$suffix"
                 "-DCMAKE_CXX_COMPILER=clang++$suffix"
-                "-DGPU_TARGETS=gfx1030;gfx1031;gfx1032;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201"
+                "-DGPU_TARGETS=gfx1010;gfx1011;gfx1012;gfx1030;gfx1031;gfx1032;gfx1033;gfx1034;gfx1035;gfx1036;gfx1100;gfx1101;gfx1102;gfx1103;gfx1150;gfx1151;gfx1152;gfx1153;gfx1200;gfx1201;gfx908;gfx90a;gfx942;gfx950"
               )
               ;;
             vulkan)
