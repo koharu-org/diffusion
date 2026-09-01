@@ -41,31 +41,42 @@ jobs:
 
   build:
     needs: source
-    name: ${{ matrix.backend }} / ${{ matrix.os }}
+    name: ${{ matrix.backend }} / ${{ matrix.target }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - backend: cuda
             os: windows-latest
+            target: x86_64-pc-windows-msvc
           - backend: cuda
             os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - backend: cuda
+            os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
           - backend: hip
             os: windows-latest
+            target: x86_64-pc-windows-msvc
           - backend: hip
             os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - backend: vulkan
             os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - backend: vulkan
             os: windows-latest
+            target: x86_64-pc-windows-msvc
           - backend: metal
             os: macos-latest
+            target: aarch64-apple-darwin
 
     runs-on: ${{ matrix.os }}
     env:
       BACKEND: ${{ matrix.backend }}
       SCCACHE_GHA_ENABLED: 'true'
       SCCACHE_IGNORE_SERVER_IO_ERROR: '1'
+      TARGET_TRIPLE: ${{ matrix.target }}
 
     steps:
       - uses: actions/checkout@v7
@@ -90,6 +101,7 @@ jobs:
         with:
           cuda: '13.0.0'
           method: network
+          log-file-suffix: ${{ matrix.target }}
           sub-packages: >-
             ${{ runner.os == 'Linux'
               && '["nvcc", "cudart", "crt", "thrust"]'
@@ -200,7 +212,7 @@ jobs:
             cuda)
               backend_args+=(
                 "-DSD_CUDA=ON"
-                "-DCMAKE_CUDA_ARCHITECTURES=75-real;80-real;86-real;89-real;90-real;100-real;120-real"
+                "-DCMAKE_CUDA_ARCHITECTURES=75-real;80-real;86-real;87-real;88-real;89-real;90-real;100-real;103-real;110-real;120-real;121-real"
               )
               ;;
             hip)
@@ -212,8 +224,12 @@ jobs:
                 "-DSD_HIPBLAS=ON"
                 "-DCMAKE_C_COMPILER=clang$suffix"
                 "-DCMAKE_CXX_COMPILER=clang++$suffix"
-                "-DGPU_TARGETS=gfx1030;gfx1100;gfx1101;gfx1102;gfx1103;gfx1150;gfx1151;gfx1152;gfx1153;gfx1200;gfx1201;gfx908;gfx90a;gfx942;gfx950"
               )
+              if [[ "$RUNNER_OS" == Linux ]]; then
+                backend_args+=("-DGPU_TARGETS=gfx908;gfx90a;gfx942;gfx950;gfx1010;gfx1011;gfx1012;gfx1030;gfx1031;gfx1032;gfx1033;gfx1034;gfx1035;gfx1036;gfx1100;gfx1101;gfx1102;gfx1103;gfx1150;gfx1151;gfx1152;gfx1153;gfx1200;gfx1201;gfx1250")
+              else
+                backend_args+=("-DGPU_TARGETS=gfx908;gfx90a;gfx1010;gfx1011;gfx1012;gfx1030;gfx1031;gfx1032;gfx1033;gfx1034;gfx1035;gfx1036;gfx1100;gfx1101;gfx1102;gfx1103;gfx1150;gfx1151;gfx1152;gfx1153;gfx1200;gfx1201")
+              fi
               ;;
             vulkan)
               backend_args+=("-DSD_VULKAN=ON")
@@ -258,7 +274,7 @@ jobs:
         run: |
           mkdir package
           cp build/bin/*stable-diffusion.* package/
-          tar -C package -czf "$RUNNER_OS-$BACKEND.tar.gz" .
+          tar -C package -czf "$TARGET_TRIPLE-$BACKEND.tar.gz" .
 
       - name: Stop sccache
         if: always()
@@ -270,8 +286,8 @@ jobs:
       - name: Upload stable-diffusion
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ runner.os }}-${{ matrix.backend }}
-          path: ${{ runner.os }}-${{ matrix.backend }}.tar.gz
+          name: ${{ matrix.target }}-${{ matrix.backend }}
+          path: ${{ matrix.target }}-${{ matrix.backend }}.tar.gz
           if-no-files-found: error
           retention-days: 3
 
